@@ -128,7 +128,7 @@ class CodeMan:
         self.code_gen_counter += 1
 
 def main():
-    text = "Give code for finding the fibonacci series using recursion. Code in javascript"
+    text = "Give code for finding the fibonacci series using recursion. Code in python"
     
     codeman = CodeMan()
     codeman.initialize_model()

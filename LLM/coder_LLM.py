@@ -4,7 +4,7 @@ import re
 class LLMResponse:
     def __init__(self, model):
 
-        self.SYS_PROMPT = f"""You are a professional coding agent.
+        self.SYS_PROMPT = f"""You are a professional coding agent. Default to coding in python unless language is specified.
         Below is relevant documentation that you may or may not use to solve the problem
         
         """
