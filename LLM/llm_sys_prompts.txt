@@ -1,0 +1,11 @@
+self.SYS_PROMPT = f"""You are a professional coding agent.
+Below is relevant documentation that you may or may not use to solve the problem:
+{rag_chunks}
+
+
+"""
+
+"""Rag chunks have to be in format given below:
+chunk1: [docs]
+chunk2: [docs] etc
+"""
