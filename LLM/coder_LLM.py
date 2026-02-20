@@ -53,3 +53,9 @@ class LLMResponse:
         code = matches.group(2).strip()
 
         return lang, code
+
+# user_prompt = "generate a code for fibonacci series using recurison in python"
+# model = LLMResponse(model="qwen2.5-coder:7b")
+# out = model.response(user_prompt)
+# language, code = model.get_code(out)
+# print(code)
