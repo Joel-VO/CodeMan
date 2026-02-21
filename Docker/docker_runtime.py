@@ -33,7 +33,7 @@ class DockerRuntime:
             check=True
         )
 
-    def run_code(self, filename: str, language: str, timeout: int = 30) -> dict:
+    def run_code(self, filename: str, language: str, timeout: int = 30) -> dict: # Change exec type to subprocess format so we can have stdin
         """Execute a file and return stdout, stderr, exit_code."""
         print(f"file name is {filename}")
         commands = {

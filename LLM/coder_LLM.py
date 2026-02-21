@@ -4,33 +4,19 @@ import re
 class LLMResponse:
     def __init__(self, model):
 
-        self.SYS_PROMPT = f"""You are a professional coding agent. Default to coding in python unless language is specified.
-        Below is relevant documentation that you may or may not use to solve the problem
-        
-        """
-        
-        """Rag chunks have to be in format given below:
-        chunk1: [docs]
-        chunk2: [docs] etc
-        """
-
+        self.SYS_PROMPT = f"""You are a professional coding agent. Default to coding in python unless language is specified."""
         self.messages = [{'role': 'system', 'content': self.SYS_PROMPT}]
-
         self.model_name = model
 
         try:
-
             ollama.chat(self.model_name)
 
         except ollama.ResponseError as e:
-            
-            print('Error:', e.error)
             if e.status_code == 404:
                 try:
                     ollama.pull(self.model_name)
                 except:
-                    print("Model pull failed, model doesn't exist in the ollama registery.")
-
+                    raise Exception("Selected a model that doesn't exist")
 
     def response(self, usr_prompt):
         
@@ -39,8 +25,9 @@ class LLMResponse:
             model = self.model_name,
             messages=self.messages
         )
-
-        return response['message']['content'] 
+        assistant_msg = response['message']['content']
+        self.messages.append({'role': 'assistant', 'content': assistant_msg})
+        return assistant_msg
 
     def get_code(self, response):
         pattern = r"```(\w+)?\s*(.*?)```"
@@ -53,6 +40,9 @@ class LLMResponse:
         code = matches.group(2).strip()
 
         return lang, code
+
+    def get_chat_history(self):
+        print(self.messages)
 
 # user_prompt = "generate a code for fibonacci series using recurison in python"
 # model = LLMResponse(model="qwen2.5-coder:7b")
