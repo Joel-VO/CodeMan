@@ -117,11 +117,12 @@ class CodeMan:
         models_available = ollama.list()
         print(f"Available models are {models_available}")
         model_name = input("Enter Model name: ")
-        try:
-            self.model = LLMResponse(model=model_name)
-        except:
-            print("Improper model chosen, kindly select a model that exists")
-            self.change_model()
+        while True:
+            try:
+                self.model = LLMResponse(model=model_name)
+                break
+            except:
+                print("Improper model chosen, kindly select a model that exists")
 
     def generate_code(self):
         if self.model == None:
