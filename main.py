@@ -89,7 +89,6 @@ LANG_MAP = {
 class CodeMan:
     def __init__(self):
         self.code_gen_counter = 0
-        self.user_prompt = ""
         self.model = None
         self.lang = ""
         self.dir = "Snippets"
@@ -109,8 +108,8 @@ class CodeMan:
         # run docker cyclically to give an o/p and then if errors are there, clean o/p and pass back to model.
         pass
 
-    def user_prompt_init(self, user_prompt_out):
-        self.user_prompt = user_prompt_out
+    # def user_prompt_init(self, user_prompt_out):
+    #     self.user_prompt = user_prompt_out
 
     def change_model(self):
         self._model_release()
@@ -124,11 +123,11 @@ class CodeMan:
             except:
                 print("Improper model chosen, kindly select a model that exists")
 
-    def generate_code(self):
+    def generate_code(self, user_prompt):
         if self.model == None:
             self._initialize_model()
 
-        out = self.model.response(self.user_prompt)
+        out = self.model.response(user_prompt)
         language, code = self.model.get_code(out)
         self.lang = LANG_MAP.get(language.lower(), "txt") if language else "txt"
 
@@ -142,23 +141,24 @@ class CodeMan:
         self.code_gen_counter += 1
 
         return path
+
     def error_prompt(self, stderror):
-        error_prompt = f"""
+        error_prompt_text = f"""
         The previous code failed with the following error:
-        {result['stderr']}
+        {stderror}
         Fix the code. Return only corrected code."""
+        return error_prompt_text
 
     def shutdown(self):
-        # if self.model:
-        #     self.model.get_chat_history()
+        if self.model:
+            self.model.get_chat_history()
         self._model_release()
         return False
 
 def main():
-    text = "Create a simple mad libs game where users are prompted for different cases. Dont ask user prompts now, have predefined answers. Generate a large story. Code python"
+    text = "Create a simple mad libs game where users are prompted for different cases. Generate a large story. Code in python"
     max_iter = 5
     codeman = CodeMan()
-    codeman.user_prompt_init(text)
     history = []
 
     with DockerRuntime() as runtime:
@@ -166,9 +166,9 @@ def main():
             try:
                 print(f"Iteration {i+1}/{max_iter}")
 
-                file_path = codeman.generate_code()
+                file_path = codeman.generate_code(text)
                 runtime.copy_file_to_container(host_path=file_path)
-                result = runtime.run_code(filename=file_path, language="python")
+                result = runtime.run_code(filename=file_path, language="python") # make lang selection dynamic
 
                 history.append({"Iteration":i, "result":result})
 
@@ -182,9 +182,11 @@ def main():
                 else:
                     print(f"\nFailed current iteration.\n")
                     print(f"\nError: {result['stderr']}")
-                    continue
-            finally:
-                codeman.shutdown()
+                    text = result['stderr']
+            except:
+                print("error in generation")
+
+        codeman.shutdown()
 
 if __name__ == "__main__":
     main()
