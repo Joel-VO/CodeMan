@@ -34,3 +34,6 @@ This will create a venv for running the script in and sets up all necessary depe
 - Designed for local development environments
 - Execution is container-isolated
 - Resource limits and security controls are recommended
+
+### Contribution
+Currently, not accepting contribution as this is a personal project and would I like to develop it to its fullest. This is a learning experience and so its unlikely I'll accept contributions 
